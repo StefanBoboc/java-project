@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -19,12 +20,14 @@ public class Main {
 //        service.addClient();
 //        System.out.println(service.getClients());
 
+//        ==================================================
+
         Service service = new Service();
 
         Scanner in = new Scanner(System.in);
 
         while(true) {
-            System.out.println("1. Add Clients\n0. EXIT");
+            System.out.println("1. Add Clients\n2. Add Doctors\n0. EXIT");
             System.out.print("-> ");
 
             int command = in.nextInt();
@@ -32,17 +35,35 @@ public class Main {
             if (command == 1){
                 service.addClient();
             }
+            else if (command == 2){
+                service.addDoctor();
+            }
             else if (command == 0) {
                 break;
             }
             else {
-                System.out.println("Invalid command! Enter one command from 0 to 1");
+                System.out.println("Invalid command! Enter one command from 0 to 2");
             }
             System.out.println("====================");
 
         }
 
-        System.out.println(service.getClients());
+//        __TESTS__
+
+//        ArrayList<Client> aux = service.getClients();
+//        System.out.println(aux.get(1).getLastName());
+//        System.out.println(aux.get(2).getPhoneNumber());
+//        System.out.println(aux.get(1).getClientID());
+//        System.out.println(aux.get(1));
+//        System.out.println(aux.get(2));
+
+        ArrayList<Client> aux = service.getClients();
+        ArrayList<Doctor> aux2 = service.getDoctors();
+
+        System.out.println(aux.get(1).getPhoneNumber());
+        System.out.println(aux2.get(3).getYearsOfExperience());
+
+
 
 
 

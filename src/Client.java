@@ -45,4 +45,12 @@ public class Client extends Person {
     public static void setNoOfClients(int noOfClients) {
         Client.noOfClients = noOfClients;
     }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 }
