@@ -43,4 +43,8 @@ public class Person {
         this.emailAddress = emailAddress;
     }
 
+    public String showPerson(){
+        return "Lastname: "+this.lastName+"; Firstname: "+firstName+"; Date of birth: "+dateOfBirth+"; Email address "+emailAddress;
+    }
+
 }

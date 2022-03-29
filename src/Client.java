@@ -30,6 +30,12 @@ public class Client extends Person {
 //        clientID = noOfClients;
 //    }
 
+
+    @Override
+    public String showPerson() {
+        return "c-ID: "+this.clientID+"; "+super.showPerson()+"; Phone number: "+this.phoneNumber;
+    }
+
     public int getClientID() {
         return clientID;
     }

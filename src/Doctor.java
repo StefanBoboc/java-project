@@ -10,6 +10,11 @@ public class Doctor extends Person {
         doctorID = noOfDoctors;
     }
 
+    @Override
+    public String showPerson() {
+        return "d-ID: "+this.doctorID+"; "+super.showPerson()+"; Experience: "+this.yearsOfExperience+" years";
+    }
+
     public int getYearsOfExperience() {
         return yearsOfExperience;
     }

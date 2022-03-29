@@ -64,9 +64,15 @@ public class Service {
                 }
 
             }
-//            System.out.println(lastName+firstName+dateOfBirth+emailAddress+phoneNumber);
         }
 
+    }
+
+    public void showClient() {
+        System.out.println("Clients: ");
+        for(int i = 0; i < clients.size(); i++) {
+            System.out.println(clients.get(i).showPerson());
+        }
     }
 
     public void addDoctor() {
@@ -98,6 +104,13 @@ public class Service {
 
             Doctor d = new Doctor(lastName, firstName, dateOfBirth, emailAddress, yearsOfExperience);
             doctors.add(d);
+        }
+    }
+
+    public void showDoctors() {
+        System.out.println("Doctors: ");
+        for(int i = 0; i < doctors.size(); i++) {
+            System.out.println(doctors.get(i).showPerson());
         }
     }
         public ArrayList<Client> getClients () {

@@ -27,25 +27,58 @@ public class Main {
         Scanner in = new Scanner(System.in);
 
         while(true) {
-            System.out.println("1. Add Clients\n2. Add Doctors\n0. EXIT");
+            System.out.println("__MENU__");
+            System.out.println("1. Add Clients\n2. Add Doctors\n3. Show Clients\n4. Show Doctors\n0. EXIT");
             System.out.print("-> ");
 
             int command = in.nextInt();
 
             if (command == 1){
                 service.addClient();
+                System.out.println("====================");
             }
             else if (command == 2){
                 service.addDoctor();
+                System.out.println("====================");
+            }
+            else if (command == 3){
+                service.showClient();
+                System.out.println("====================");
+            }
+            else if (command == 4){
+                service.showDoctors();
+                System.out.println("====================");
             }
             else if (command == 0) {
+                System.out.println("====================");
+                System.out.println("You left the program");
+                System.out.println("====================");
                 break;
             }
             else {
                 System.out.println("Invalid command! Enter one command from 0 to 2");
             }
-            System.out.println("====================");
 
+//            switch (command) {
+//                case 1:
+//                    service.addClient();
+//                    break;
+//                case 2:
+//                    service.addDoctor();
+//                    break;
+//                case 3:
+//                    service.showClient();
+//                    break;
+//                case 4:
+//                    service.showDoctor();
+//                    break;
+//                case 0:
+//                    System.out.println("You left the program");
+//                    break;
+//                default:
+//                    System.out.println("Invalid command! Enter one command from 0 to 4");
+//            }
+//            System.out.println("====================");
         }
 
 //        __TESTS__
@@ -57,11 +90,11 @@ public class Main {
 //        System.out.println(aux.get(1));
 //        System.out.println(aux.get(2));
 
-        ArrayList<Client> aux = service.getClients();
-        ArrayList<Doctor> aux2 = service.getDoctors();
-
-        System.out.println(aux.get(1).getPhoneNumber());
-        System.out.println(aux2.get(3).getYearsOfExperience());
+//        ArrayList<Client> aux = service.getClients();
+//        ArrayList<Doctor> aux2 = service.getDoctors();
+//
+//        System.out.println(aux.get(1).getPhoneNumber());
+//        System.out.println(aux2.get(3).getYearsOfExperience());
 
 
 
