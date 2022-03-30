@@ -3,33 +3,16 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-//        Person person1 = new Person("Popescu", "Alex", "12.12.1989", "popescualex@email.com");
-//        Person person2 = new Person("Musca", "Bogdan", "12.12.1989", "muscabogdan@email.com", "0741234567");
-
-//        System.out.println(person1.getPhoneNumber());
-//        System.out.println(person2.getPhoneNumber());
-
-//        Client client1 = new Client("Stana", "Teo", "12.12.1212", "stana.teo@email.com");
-//        Client client2 = new Client("Bajan", "Ioana", "12.12.1212", "bajan.ioana@email.com");
-//        System.out.println(client1.getClientID());
-//        System.out.println(client2.getClientID());
-
-//        Service service = new Service();
-//        service.addClient();
-//        System.out.println(service.getClients());
-//        service.addClient();
-//        System.out.println(service.getClients());
-
-//        ==================================================
 
         Service service = new Service();
 
         Scanner in = new Scanner(System.in);
 
         while(true) {
-            System.out.println("__MENU__");
-            System.out.println("1. Add Clients\n2. Add Doctors\n3. Show Clients\n4. Show Doctors\n0. EXIT");
-            System.out.print("-> ");
+            System.out.println("___MENU___");
+            System.out.println("1. Add Clients\n2. Add Doctors\n3. Show Clients\n4. Show Doctors\n5. Make An Appointment\n6. Show Appointments Of A Client\n7. Edit Appointment\n8. Delete An Appointment\n9. Remove Client\n10. Remove Doctor\n0. EXIT");
+            System.out.println("--------");
+            System.out.print("> ");
 
             int command = in.nextInt();
 
@@ -49,6 +32,30 @@ public class Main {
                 service.showDoctors();
                 System.out.println("====================");
             }
+            else if (command == 5){
+                service.makeAppointment();
+                System.out.println("====================");
+            }
+            else if (command == 6){
+                service.seeAppointment();
+                System.out.println("====================");
+            }
+            else if (command == 7){
+                service.editAppointment();
+                System.out.println("====================");
+            }
+            else if (command == 8){
+                service.removeAppointment();
+                System.out.println("====================");
+            }
+            else if (command == 9){
+                service.removeClient();
+                System.out.println("====================");
+            }
+            else if (command == 10){
+                service.removeDoctor();
+                System.out.println("====================");
+            }
             else if (command == 0) {
                 System.out.println("====================");
                 System.out.println("You left the program");
@@ -58,6 +65,11 @@ public class Main {
             else {
                 System.out.println("Invalid command! Enter one command from 0 to 2");
             }
+        }
+
+//        Appointment a = new Pediatrics("1", 1, 3, "mihai", 12, "f");
+//        Appointment b = new Pediatrics("1", 1, 3, "mihai", 12, "f");
+//        System.out.println(b.showAppointment());
 
 //            switch (command) {
 //                case 1:
@@ -79,25 +91,12 @@ public class Main {
 //                    System.out.println("Invalid command! Enter one command from 0 to 4");
 //            }
 //            System.out.println("====================");
-        }
+
 
 //        __TESTS__
 
-//        ArrayList<Client> aux = service.getClients();
-//        System.out.println(aux.get(1).getLastName());
-//        System.out.println(aux.get(2).getPhoneNumber());
-//        System.out.println(aux.get(1).getClientID());
-//        System.out.println(aux.get(1));
-//        System.out.println(aux.get(2));
-
-//        ArrayList<Client> aux = service.getClients();
-//        ArrayList<Doctor> aux2 = service.getDoctors();
-//
-//        System.out.println(aux.get(1).getPhoneNumber());
-//        System.out.println(aux2.get(3).getYearsOfExperience());
-
-
-
+//        Pediatrics pedi1 = new Pediatrics("12:00", 29, 3, "copil1", 12, "M");
+//        System.out.println(pedi1.showAppointment());
 
 
     }
