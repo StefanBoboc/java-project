@@ -17,7 +17,7 @@
 > # Actiuni
 
  | No.  | Functie                        | Descriere                                     |
- | :--- |    :----                       |         ---                                   |
+ | :--- |    ----                        |         ---                                   |
  | 1    | Add Clients                    | Adauga n clienti                              |
  | 2    | Add Doctors                    | Adauga n medici                               |
  | 3    | Show Clients                   | Arata toti clientii salvati in memorie        |
