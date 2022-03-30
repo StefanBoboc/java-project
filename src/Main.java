@@ -66,38 +66,5 @@ public class Main {
                 System.out.println("Invalid command! Enter one command from 0 to 2");
             }
         }
-
-//        Appointment a = new Pediatrics("1", 1, 3, "mihai", 12, "f");
-//        Appointment b = new Pediatrics("1", 1, 3, "mihai", 12, "f");
-//        System.out.println(b.showAppointment());
-
-//            switch (command) {
-//                case 1:
-//                    service.addClient();
-//                    break;
-//                case 2:
-//                    service.addDoctor();
-//                    break;
-//                case 3:
-//                    service.showClient();
-//                    break;
-//                case 4:
-//                    service.showDoctor();
-//                    break;
-//                case 0:
-//                    System.out.println("You left the program");
-//                    break;
-//                default:
-//                    System.out.println("Invalid command! Enter one command from 0 to 4");
-//            }
-//            System.out.println("====================");
-
-
-//        __TESTS__
-
-//        Pediatrics pedi1 = new Pediatrics("12:00", 29, 3, "copil1", 12, "M");
-//        System.out.println(pedi1.showAppointment());
-
-
     }
 }
