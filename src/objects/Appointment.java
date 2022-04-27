@@ -1,3 +1,5 @@
+package objects;
+
 public class Appointment {
     private String time;
     private String day;

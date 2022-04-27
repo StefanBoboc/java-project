@@ -1,3 +1,8 @@
+package main;
+
+import services.Read;
+import services.Service;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -5,6 +10,12 @@ public class Main {
     public static void main(String[] args) {
 
         Service service = new Service();
+
+        // reading data from .csv's
+        service.addDoctorCSV();
+        service.addClientsCSV();
+        service.makeAppointmentAnalysesCSV();
+        service.makeAppointmentGynecologyCSV();
 
         Scanner in = new Scanner(System.in);
 
@@ -63,8 +74,9 @@ public class Main {
                 break;
             }
             else {
-                System.out.println("Invalid command! Enter one command from 0 to 2");
+                System.out.println("Invalid command! Enter one command from 0 to 10");
             }
         }
+
     }
 }

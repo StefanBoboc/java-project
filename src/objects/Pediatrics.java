@@ -1,4 +1,6 @@
-public class Pediatrics extends Appointment{
+package objects;
+
+public class Pediatrics extends Appointment {
     private String childFullName;
     private int childAge;
     private String childSex;

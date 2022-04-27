@@ -1,4 +1,6 @@
-public class Analyses extends Appointment{
+package objects;
+
+public class Analyses extends Appointment {
     private String optionOfAnalyses;
 
     private int analysesID;

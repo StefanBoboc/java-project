@@ -1,3 +1,7 @@
+package services;
+
+import objects.*;
+
 import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,15 +10,35 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Integer.parseInt;
+
 public class Service {
 //    ArrayList<Client> clients;
     Map<Integer, Client> clients;
     ArrayList<Doctor> doctors;
 
+    Write audit = Write.getInstance();
+
     public Service() {
 //        this.clients = new ArrayList<>();
         this.clients = new HashMap<>();
         this.doctors = new ArrayList<>();
+    }
+
+    public void addClientsCSV(){
+        Read reading = Read.getInstance();
+
+        String fileName = "clients.csv";
+        ArrayList<String> lines = reading.csvReader(fileName);
+        int noLines = lines.size();
+
+        for(int i = 1; i < noLines; i++){
+            String []line = lines.get(i).split(",");
+
+            Client c = new Client(line[0], line[1], line[2], line[3], line[4]);
+            clients.put(c.getClientID(), c);
+        }
+        audit.csvWriter("addClientsCSV");
     }
 
     public void addClient() {
@@ -57,7 +81,7 @@ public class Service {
                     matchFound = matcher.find();
 
                     if (phoneNumber.equals("n") == true) {
-                        Client c = new Client(lastName, firstName, dateOfBirth, emailAddress);
+                        Client c = new Client(lastName, firstName, dateOfBirth, emailAddress, phoneNumber);
                         clients.put(c.getClientID(), c);
                         break;
                     } else if (matchFound == true) {
@@ -69,7 +93,7 @@ public class Service {
 
             }
         }
-
+        audit.csvWriter("addClient");
     }
 
     public void showClient() {
@@ -80,6 +104,27 @@ public class Service {
 //        for(int i = 0; i < clients.size(); i++) {
 //            System.out.println(clients.get(i).showPerson());
 //        }
+        audit.csvWriter("showClient");
+    }
+
+    public void addDoctorCSV(){
+        Read reading = Read.getInstance();
+
+        String fileName = "doctors.csv";
+        ArrayList<String> lines = reading.csvReader(fileName);
+        int noLines = lines.size();
+
+        for(int i = 1; i < noLines; i++){
+            String []line = lines.get(i).split(",");
+
+            Doctor d = new Doctor(line[0], line[1], line[2], line[3], parseInt(line[4]), line[5]);
+            doctors.add(d);
+//            for(int j = 0; j < line.length; j++){
+//                System.out.println(line[j]);
+//            }
+//            System.out.println("--------");
+        }
+        audit.csvWriter("addDoctorCSV");
     }
 
     public void addDoctor() {
@@ -114,6 +159,7 @@ public class Service {
             Doctor d = new Doctor(lastName, firstName, dateOfBirth, emailAddress, yearsOfExperience, type);
             doctors.add(d);
         }
+        audit.csvWriter("addDoctor");
     }
 
     public void showDoctors() {
@@ -121,6 +167,46 @@ public class Service {
         for(int i = 0; i < doctors.size(); i++) {
             System.out.println(doctors.get(i).showPerson());
         }
+        audit.csvWriter("showDoctor");
+    }
+
+    public void makeAppointmentAnalysesCSV() {
+        Read reading = Read.getInstance();
+
+        String fileName = "analyses.csv";
+        ArrayList<String> lines = reading.csvReader(fileName);
+        int noLines = lines.size();
+
+        for(int i = 1; i < noLines; i++){
+            String []line = lines.get(i).split(",");
+
+            Client c;
+            c = clients.get(parseInt(line[0]));
+
+            Analyses a = new Analyses(line[1], line[2], line[3], line[4]);
+            c.addAppointment(a);
+        }
+        audit.csvWriter("makeAppointmentAnalysesCVS");
+    }
+
+    public void makeAppointmentGynecologyCSV() {
+        Read reading = Read.getInstance();
+
+        String fileName = "gynecology.csv";
+        ArrayList<String> lines = reading.csvReader(fileName);
+        int noLines = lines.size();
+
+        for(int i = 1; i < noLines; i++){
+            String []line = lines.get(i).split(",");
+
+            Client c;
+            c = clients.get(parseInt(line[0]));
+
+            Gynecology g = new Gynecology(line[1], line[2], line[3], line[4]);
+            c.addAppointment(g);
+        }
+
+        audit.csvWriter("makeAppointmentGynecologyCSV");
     }
 
     public void makeAppointment() {
@@ -235,7 +321,7 @@ public class Service {
             Appointment aux = new Analyses(time, day, month, optionOfAnalyses);
             c.addAppointment(aux);
         }
-
+        audit.csvWriter("makeAppointment");
     }
 
     public void seeAppointment(){
@@ -248,6 +334,8 @@ public class Service {
         Client c = clients.get(cID);
 
         c.showAppointments();
+
+        audit.csvWriter("seeAppointment");
     }
 
     public void removeAppointment(){
@@ -272,6 +360,7 @@ public class Service {
         else{
             System.out.println("!This client has no appointments!");
         }
+        audit.csvWriter("removeAppointment");
     }
 
     public void editAppointment(){
@@ -305,6 +394,7 @@ public class Service {
         else{
             System.out.println("!This client has no appointments!");
         }
+        audit.csvWriter("editAppointment");
     }
 
     public void removeClient(){
@@ -315,6 +405,8 @@ public class Service {
         int cID = in.nextInt();
 
         clients.remove(cID);
+
+        audit.csvWriter("removeClient");
     }
 
     public void removeDoctor(){
@@ -329,6 +421,7 @@ public class Service {
                 doctors.remove(i);
             }
         }
+        audit.csvWriter("removeDoctor");
     }
 
 

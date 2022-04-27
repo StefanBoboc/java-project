@@ -1,3 +1,5 @@
+package objects;
+
 import java.util.ArrayList;
 
 public class Client extends Person {
@@ -62,7 +64,7 @@ public class Client extends Person {
     }
 
     public void removeAppointment(int option){
-        System.out.println("-> Appointment no"+appointments.get(option).getAppointmentID()+".\n"+appointments.get(option).showAppointment()+"\nwas successfully deleted!");
+        System.out.println("-> objects.Appointment no"+appointments.get(option).getAppointmentID()+".\n"+appointments.get(option).showAppointment()+"\nwas successfully deleted!");
         this.appointments.remove(option);
 
     }

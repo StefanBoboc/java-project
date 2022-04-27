@@ -1,3 +1,5 @@
+package objects;
+
 public class Doctor extends Person {
     private int yearsOfExperience;
     private String type;

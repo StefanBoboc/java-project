@@ -1,4 +1,6 @@
-public class Obstetrics extends Appointment{
+package objects;
+
+public class Obstetrics extends Appointment {
     private int monthOfPregnancy;
     private int pregnancyNumber;
     private String abortions;

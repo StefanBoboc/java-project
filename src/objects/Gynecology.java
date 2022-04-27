@@ -1,4 +1,6 @@
-public class Gynecology extends Appointment{
+package objects;
+
+public class Gynecology extends Appointment {
     private String symptoms;
 
     private int gynecologyID;
@@ -14,7 +16,7 @@ public class Gynecology extends Appointment{
 
     @Override
     public String showAppointment() {
-        return "gyn-ID: "+this.gynecologyID+"; "+super.showAppointment()+"; Simptome: "+this.symptoms;
+        return "gyn-ID: "+this.gynecologyID+"; "+super.showAppointment()+"; Symptoms: "+this.symptoms;
     }
 
     public int getGynecologyID() {
