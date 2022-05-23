@@ -13,6 +13,10 @@ public class Person {
         this.emailAddress = emailAddress;
     }
 
+    public String showPerson(){
+        return "Lastname: "+this.lastName+"; Firstname: "+firstName+"; Date of birth: "+dateOfBirth+"; Email address: "+emailAddress;
+    }
+
     public String getLastName() {
         return lastName;
     }
@@ -44,9 +48,4 @@ public class Person {
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
     }
-
-    public String showPerson(){
-        return "Lastname: "+this.lastName+"; Firstname: "+firstName+"; Date of birth: "+dateOfBirth+"; Email address "+emailAddress;
-    }
-
 }

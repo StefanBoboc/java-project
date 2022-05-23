@@ -19,14 +19,6 @@ public class Analyses extends Appointment {
         return "ana-ID: "+this.analysesID+"; "+super.showAppointment()+"; Option of analyses: "+this.optionOfAnalyses;
     }
 
-    public String getOptionOfAnalyses() {
-        return optionOfAnalyses;
-    }
-
-    public void setOptionOfAnalyses(String optionOfAnalyses) {
-        this.optionOfAnalyses = optionOfAnalyses;
-    }
-
     public int getAnalysesID() {
         return analysesID;
     }
@@ -41,5 +33,13 @@ public class Analyses extends Appointment {
 
     public static void setNoOfAnalyses(int noOfAnalyses) {
         Analyses.noOfAnalyses = noOfAnalyses;
+    }
+
+    public String getOptionOfAnalyses() {
+        return optionOfAnalyses;
+    }
+
+    public void setOptionOfAnalyses(String optionOfAnalyses) {
+        this.optionOfAnalyses = optionOfAnalyses;
     }
 }

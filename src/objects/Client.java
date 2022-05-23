@@ -40,7 +40,8 @@ public class Client extends Person {
     public void showAppointments(){
         if(this.appointments.size() != 0) {
             for (int i = 0; i < this.appointments.size(); i++) {
-                System.out.println(appointments.get(i).getAppointmentID() + ". " + appointments.get(i).showAppointment());
+                System.out.println((i+1) + ". " + appointments.get(i).showAppointment());
+                // appointments.get(i).getAppointmentID()
             }
         }
         else{
@@ -49,24 +50,24 @@ public class Client extends Person {
     }
 
     public void editAppointment(int option, String time, String day, String month){
+        Appointment a = appointments.get(option);
         if(time.equals("n") != true){
-            Appointment a = appointments.get(option);
             a.setTime(time);
         }
         if(day.equals("n") != true){
-            Appointment a = appointments.get(option);
             a.setDay(day);
         }
-        if(time.equals("n") != true){
-            Appointment a = appointments.get(option);
+        if(month.equals("n") != true){
             a.setMonth(month);
         }
     }
 
     public void removeAppointment(int option){
-        System.out.println("-> objects.Appointment no"+appointments.get(option).getAppointmentID()+".\n"+appointments.get(option).showAppointment()+"\nwas successfully deleted!");
+        String message = appointments.get(option).showAppointment();
+
         this.appointments.remove(option);
 
+        System.out.println("-> Appointment: '"+message+"' was successfully deleted!");
     }
 
     public int getClientID() {

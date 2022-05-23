@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Read {
-    private Read(){}
     private static Read single_instance = null;
+    private Read(){}
 
     public static Read getInstance(){
         if(single_instance == null){

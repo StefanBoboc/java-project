@@ -19,14 +19,6 @@ public class Doctor extends Person {
         return "d-ID: "+this.doctorID+"; "+super.showPerson()+"; Experience: "+this.yearsOfExperience+" years"+"; Type: "+this.type;
     }
 
-    public int getYearsOfExperience() {
-        return yearsOfExperience;
-    }
-
-    public void setYearsOfExperience(int yearsOfExperience) {
-        this.yearsOfExperience = yearsOfExperience;
-    }
-
     public int getDoctorID() {
         return doctorID;
     }
@@ -42,4 +34,21 @@ public class Doctor extends Person {
     public static void setNoOfDoctors(int noOfDoctors) {
         Doctor.noOfDoctors = noOfDoctors;
     }
+
+    public int getYearsOfExperience() {
+        return yearsOfExperience;
+    }
+
+    public void setYearsOfExperience(int yearsOfExperience) {
+        this.yearsOfExperience = yearsOfExperience;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
 }

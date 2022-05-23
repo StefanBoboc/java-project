@@ -1,8 +1,10 @@
 package services;
 
 import objects.*;
-
-import javax.print.Doc;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,34 +15,131 @@ import java.util.regex.Pattern;
 import static java.lang.Integer.parseInt;
 
 public class Service {
-//    ArrayList<Client> clients;
     Map<Integer, Client> clients;
     ArrayList<Doctor> doctors;
-
-    Write audit = Write.getInstance();
+    Read reading = Read.getInstance();
+    Write writing = Write.getInstance();
+    DataBaseConnnection dataBase = DataBaseConnnection.getInstance();
 
     public Service() {
-//        this.clients = new ArrayList<>();
         this.clients = new HashMap<>();
         this.doctors = new ArrayList<>();
     }
 
-    public void addClientsCSV(){
-        Read reading = Read.getInstance();
+    public void addCSVData(){
+        addClientsCSV();
+        addDoctorCSV();
+        makeAppointmentAnalysesCSV();
+        makeAppointmentGynecologyCSV();
+    }
 
+    // loading the date from JDBC
+    public void addJDBCData(){
+        try(Statement statement = dataBase.getConnection().createStatement()){
+            String query = "select * from clients";
+            ResultSet rs = statement.executeQuery(query);
+
+            while(rs.next()) {
+                Client client = new Client(rs.getString("last_name"), rs.getString("first_name"), rs.getString("birth_of_date"), rs.getString("email_address"), rs.getString("phone_number"));
+
+                clients.put(client.getClientID(), client);
+            }
+
+            query = "select * from doctors";
+            rs = statement.executeQuery(query);
+
+            while(rs.next()) {
+                Doctor doctor = new Doctor(rs.getString("last_name"), rs.getString("first_name"), rs.getString("birth_of_date"), rs.getString("email_address"), rs.getInt("years_of_experience"), rs.getString("type"));
+
+                doctors.add(doctor);
+            }
+
+            query = "select * from analyses";
+            rs = statement.executeQuery(query);
+
+            while(rs.next()) {
+                Client c;
+                c = clients.get(rs.getInt("id_client"));
+
+                Analyses a = new Analyses(rs.getString("time"), rs.getString("day"), rs.getString("month"), rs.getString("option_of_analyses"));
+                c.addAppointment(a);
+            }
+
+            query = "select * from gynecology";
+            rs = statement.executeQuery(query);
+
+            while(rs.next()) {
+                Client c;
+                c = clients.get(rs.getInt("id_client"));
+
+                Gynecology g = new Gynecology(rs.getString("time"), rs.getString("day"), rs.getString("month"), rs.getString("symptoms"));
+                c.addAppointment(g);
+            }
+
+            query = "select * from pediatrics";
+            rs = statement.executeQuery(query);
+
+            while(rs.next()) {
+                Client c;
+                c = clients.get(rs.getInt("id_client"));
+
+                Pediatrics p = new Pediatrics(rs.getString("time"), rs.getString("day"), rs.getString("month"), rs.getString("child_full_name"), rs.getInt("child_age"), rs.getString("child_sex"));
+                c.addAppointment(p);
+            }
+
+            query = "select * from obstetrics";
+            rs = statement.executeQuery(query);
+
+            while(rs.next()) {
+                Client c;
+                c = clients.get(rs.getInt("id_client"));
+
+                Obstetrics o = new Obstetrics(rs.getString("time"), rs.getString("day"), rs.getString("month"), rs.getInt("month_of_pregnancy"), rs.getInt("pregnancy_number"), rs.getString("abortions"));
+                c.addAppointment(o);
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Client insertion into JDBC
+    public void addClientsJDBC(Client c){
+        try {
+            String query = "insert into clients values(?,?,?,?,?,?)";
+            PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+            preparedStatement.setInt(1, c.getClientID());
+            preparedStatement.setString(2, c.getLastName());
+            preparedStatement.setString(3, c.getFirstName());
+            preparedStatement.setString(4, c.getDateOfBirth());
+            preparedStatement.setString(5, c.getEmailAddress());
+            preparedStatement.setString(6, c.getPhoneNumber());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // reading Clients data from CSV files
+    public void addClientsCSV(){
         String fileName = "clients.csv";
         ArrayList<String> lines = reading.csvReader(fileName);
         int noLines = lines.size();
 
+        // line reading and removing commas
         for(int i = 1; i < noLines; i++){
             String []line = lines.get(i).split(",");
 
             Client c = new Client(line[0], line[1], line[2], line[3], line[4]);
             clients.put(c.getClientID(), c);
         }
-        audit.csvWriter("addClientsCSV");
+
+        writing.csvWriter("addClientsCSV");
     }
 
+    // reading Client data
     public void addClient() {
         Scanner in = new Scanner(System.in);
 
@@ -64,6 +163,8 @@ public class Service {
 
             System.out.print("Phone Number Client_" + i + " (optional: n for 'null'): ");
             String phoneNumber = in.nextLine();
+
+            // phone number must be in a format
             Pattern pattern = Pattern.compile("^\\d{10}$");
             Matcher matcher = pattern.matcher(phoneNumber);
             boolean matchFound = matcher.find();
@@ -71,6 +172,7 @@ public class Service {
             if ((phoneNumber.equals("n") == true) || matchFound == true) {
                 Client c = new Client(lastName, firstName, dateOfBirth, emailAddress, phoneNumber);
                 clients.put(c.getClientID(), c);
+                addClientsJDBC(c);
 
             } else {
                 while ((phoneNumber.equals("n") != true) && (matchFound != true)) {
@@ -83,50 +185,70 @@ public class Service {
                     if (phoneNumber.equals("n") == true) {
                         Client c = new Client(lastName, firstName, dateOfBirth, emailAddress, phoneNumber);
                         clients.put(c.getClientID(), c);
+                        addClientsJDBC(c);
                         break;
                     } else if (matchFound == true) {
                         Client c = new Client(lastName, firstName, dateOfBirth, emailAddress, phoneNumber);
                         clients.put(c.getClientID(), c);
+                        addClientsJDBC(c);
                         break;
                     }
                 }
 
             }
         }
-        audit.csvWriter("addClient");
+
+        writing.csvWriter("addClient");
     }
 
+    // display Client
     public void showClient() {
         System.out.println("=> Clients: ");
         for (Integer i : clients.keySet()){
             System.out.println(clients.get(i).showPerson());
         }
-//        for(int i = 0; i < clients.size(); i++) {
-//            System.out.println(clients.get(i).showPerson());
-//        }
-        audit.csvWriter("showClient");
+
+        writing.csvWriter("showClient");
     }
 
-    public void addDoctorCSV(){
-        Read reading = Read.getInstance();
+    // Doctors insertion into JDBC
+    public void addDoctorsJDBC(Doctor d){
+        try {
+            String query = "insert into doctors values(?,?,?,?,?,?,?)";
+            PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+            preparedStatement.setInt(1, d.getDoctorID());
+            preparedStatement.setString(2, d.getLastName());
+            preparedStatement.setString(3, d.getFirstName());
+            preparedStatement.setString(4, d.getDateOfBirth());
+            preparedStatement.setString(5, d.getEmailAddress());
+            preparedStatement.setInt(6, d.getYearsOfExperience());
+            preparedStatement.setString(7, d.getType());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    // reading Doctor data from CSV files
+    public void addDoctorCSV(){
         String fileName = "doctors.csv";
         ArrayList<String> lines = reading.csvReader(fileName);
         int noLines = lines.size();
 
+        // line reading and removing commas
         for(int i = 1; i < noLines; i++){
             String []line = lines.get(i).split(",");
 
             Doctor d = new Doctor(line[0], line[1], line[2], line[3], parseInt(line[4]), line[5]);
             doctors.add(d);
-//            for(int j = 0; j < line.length; j++){
-//                System.out.println(line[j]);
-//            }
-//            System.out.println("--------");
         }
-        audit.csvWriter("addDoctorCSV");
+
+        writing.csvWriter("addDoctorCSV");
     }
 
+    // reading Doctor data
     public void addDoctor() {
         Scanner in = new Scanner(System.in);
 
@@ -158,25 +280,30 @@ public class Service {
 
             Doctor d = new Doctor(lastName, firstName, dateOfBirth, emailAddress, yearsOfExperience, type);
             doctors.add(d);
+
+            addDoctorsJDBC(d);
         }
-        audit.csvWriter("addDoctor");
+
+        writing.csvWriter("addDoctor");
     }
 
+    // display Doctors
     public void showDoctors() {
         System.out.println("=> Doctors: ");
         for(int i = 0; i < doctors.size(); i++) {
             System.out.println(doctors.get(i).showPerson());
         }
-        audit.csvWriter("showDoctor");
+
+        writing.csvWriter("showDoctor");
     }
 
+    // reading Analyses Appointment data from CSV files
     public void makeAppointmentAnalysesCSV() {
-        Read reading = Read.getInstance();
-
         String fileName = "analyses.csv";
         ArrayList<String> lines = reading.csvReader(fileName);
         int noLines = lines.size();
 
+        // line reading and removing commas
         for(int i = 1; i < noLines; i++){
             String []line = lines.get(i).split(",");
 
@@ -186,12 +313,12 @@ public class Service {
             Analyses a = new Analyses(line[1], line[2], line[3], line[4]);
             c.addAppointment(a);
         }
-        audit.csvWriter("makeAppointmentAnalysesCVS");
+
+        writing.csvWriter("makeAppointmentAnalysesCVS");
     }
 
+    // reading Gynecology Appointment data from CSV files
     public void makeAppointmentGynecologyCSV() {
-        Read reading = Read.getInstance();
-
         String fileName = "gynecology.csv";
         ArrayList<String> lines = reading.csvReader(fileName);
         int noLines = lines.size();
@@ -206,9 +333,10 @@ public class Service {
             c.addAppointment(g);
         }
 
-        audit.csvWriter("makeAppointmentGynecologyCSV");
+        writing.csvWriter("makeAppointmentGynecologyCSV");
     }
 
+    // reading Appointment data
     public void makeAppointment() {
         Scanner in = new Scanner(System.in);
 
@@ -225,11 +353,9 @@ public class Service {
 
         System.out.print("Day of the appointment: ");
         String day = in.nextLine();
-//        in.nextLine();
 
         System.out.print("Month of the appointment: ");
         String month = in.nextLine();
-//        in.nextLine();
 
         System.out.print("Type of appointment: examination or analyses; (e/a): ");
         String typeAppointment = in.nextLine();
@@ -251,6 +377,7 @@ public class Service {
                 typeExamination = in.nextLine();
             }
 
+            // reading Pediatrics data
             if(typeExamination.equals("p") == true){
                 System.out.println("# Pediatrics: ");
 
@@ -272,7 +399,30 @@ public class Service {
 
                 Appointment aux = new Pediatrics(time, day, month, childFullName, childAge, childSex);
                 c.addAppointment(aux);
+
+                Pediatrics p = (Pediatrics) aux;
+
+                // Pediatrics insertion into JDBC
+                try {
+                    String query = "insert into pediatrics values(?,?,?,?,?,?,?,?)";
+                    PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+                    preparedStatement.setInt(1, p.getPediatricsID());
+                    preparedStatement.setInt(2, cID);
+                    preparedStatement.setString(3, time);
+                    preparedStatement.setString(4, day);
+                    preparedStatement.setString(5, month);
+                    preparedStatement.setString(6, childFullName);
+                    preparedStatement.setInt(7, childAge);
+                    preparedStatement.setString(8, childSex);
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                }
+                catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
+
+            // reading Gynecology data
             else if(typeExamination.equals("g") == true){
                 System.out.println("# Gynecology: ");
 
@@ -281,7 +431,28 @@ public class Service {
 
                 Appointment aux = new Gynecology(time, day, month, symptoms);
                 c.addAppointment(aux);
+
+                Gynecology g = (Gynecology) aux;
+
+                // Gynecology insertion into JDBC
+                try {
+                    String query = "insert into gynecology values(?,?,?,?,?,?)";
+                    PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+                    preparedStatement.setInt(1, g.getGynecologyID());
+                    preparedStatement.setInt(2, cID);
+                    preparedStatement.setString(3, time);
+                    preparedStatement.setString(4, day);
+                    preparedStatement.setString(5, month);
+                    preparedStatement.setString(6, symptoms);
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                }
+                catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
+
+            // reading Obstetrics data
             else if(typeExamination.equals("o") == true){
                 System.out.println("# Obstetrics: ");
 
@@ -304,8 +475,31 @@ public class Service {
 
                 Appointment aux = new Obstetrics(time, day, month, monthOfPregnancy, pregnancyNumber, abortions);
                 c.addAppointment(aux);
+
+                Obstetrics o = (Obstetrics) aux;
+
+                // Obstetrics insertion into JDBC
+                try {
+                    String query = "insert into obstetrics values(?,?,?,?,?,?,?,?)";
+                    PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+                    preparedStatement.setInt(1, o.getObstetricsID());
+                    preparedStatement.setInt(2, cID);
+                    preparedStatement.setString(3, time);
+                    preparedStatement.setString(4, day);
+                    preparedStatement.setString(5, month);
+                    preparedStatement.setInt(6, monthOfPregnancy);
+                    preparedStatement.setInt(7, pregnancyNumber);
+                    preparedStatement.setString(8, abortions);
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                }
+                catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
+
+        // reading Analyses data
         else if(typeAppointment.equals("a") == true){
             System.out.println("=> Analyses: ");
 
@@ -320,10 +514,31 @@ public class Service {
 
             Appointment aux = new Analyses(time, day, month, optionOfAnalyses);
             c.addAppointment(aux);
+
+            Analyses a = (Analyses) aux;
+
+            // Analyses insertion into JDBC
+            try {
+                String query = "insert into analyses values(?,?,?,?,?,?)";
+                PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+                preparedStatement.setInt(1, a.getAnalysesID());
+                preparedStatement.setInt(2, cID);
+                preparedStatement.setString(3, time);
+                preparedStatement.setString(4, day);
+                preparedStatement.setString(5, month);
+                preparedStatement.setString(6, optionOfAnalyses);
+                preparedStatement.executeUpdate();
+                preparedStatement.close();
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        audit.csvWriter("makeAppointment");
+
+        writing.csvWriter("makeAppointment");
     }
 
+    // display all the Appointments of a given Client
     public void seeAppointment(){
         Scanner in = new Scanner(System.in);
 
@@ -335,9 +550,10 @@ public class Service {
 
         c.showAppointments();
 
-        audit.csvWriter("seeAppointment");
+        writing.csvWriter("seeAppointment");
     }
 
+    // delete an Appointment of a given Client
     public void removeAppointment(){
         Scanner in = new Scanner(System.in);
 
@@ -352,17 +568,94 @@ public class Service {
             c.showAppointments();
 
             System.out.print("-> Which one do you want to delete? ");
-            int option = in.nextInt()-1;
+            int appointmentID = in.nextInt()-1;
             in.nextLine();
 
-            c.removeAppointment(option);
+            // getting the Appointment ID and the Appointment type before deleting them
+            ArrayList<Appointment> app = c.getAppointments();
+            String typeApp = app.get(appointmentID).showAppointment().substring(0, 3);
+            Appointment aux = app.get(appointmentID);
+
+            // deleting the Appointment
+            c.removeAppointment(appointmentID);
+
+            if(typeApp.equals("ana")){
+
+                // casting the Appointment into Analyses to obtain the Analyses ID
+                Analyses auxx = (Analyses) aux;
+                Integer typeAppID = auxx.getAnalysesID();
+
+                // deleting Analyses from JDBC
+                try {
+                    String query = "delete from analyses where id_analyses = "+typeAppID+";";
+                    PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                }
+                catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            else if(typeApp.equals("gyn")) {
+
+                // casting the Appointment into Gynecology to obtain the Gynecology ID
+                Gynecology auxx = (Gynecology) aux;
+                Integer typeAppID = auxx.getGynecologyID();
+
+                // deleting Gynecology from JDBC
+                try {
+                    String query = "delete from gynecology where id_gynecology = " + typeAppID + ";";
+                    PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            else if(typeApp.equals("obs")) {
+
+                // casting the Appointment into Obstetrics to obtain the Obstetrics ID
+                Obstetrics auxx = (Obstetrics) aux;
+                Integer typeAppID = auxx.getObstetricsID();
+
+                // deleting Obstetrics from JDBC
+                try {
+                    String query = "delete from obstetrics where id_obstetrics = " + typeAppID + ";";
+                    PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            else if(typeApp.equals("ped")) {
+
+                // casting the Appointment into Pediatrics to obtain the Pediatrics ID
+                Pediatrics auxx = (Pediatrics) aux;
+                Integer typeAppID = auxx.getPediatricsID();
+
+                // deleting Pediatrics from JDBC
+                try {
+                    String query = "delete from pediatrics where id_pediatrics = " + typeAppID + ";";
+                    PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            else{
+                System.out.println("Error...");
+            }
         }
         else{
             System.out.println("!This client has no appointments!");
         }
-        audit.csvWriter("removeAppointment");
+
+        writing.csvWriter("removeAppointment");
     }
 
+    // edit an Appointment of a given Client
     public void editAppointment(){
         Scanner in = new Scanner(System.in);
 
@@ -377,26 +670,114 @@ public class Service {
             c.showAppointments();
 
             System.out.print("-> Which appointment do you want to edit? ");
-            int option = in.nextInt()-1;
+            int appointmentID = in.nextInt()-1;
             in.nextLine();
 
-            System.out.print("New time/'n' form 'null': ");
+            System.out.print("New time or press 'n' to skip: ");
             String time = in.nextLine();
 
-            System.out.print("New day/'n' form 'null': ");
+            System.out.print("New day or press 'n' to skip: ");
             String day = in.nextLine();
 
-            System.out.print("New month/'n' form 'null': ");
+            System.out.print("New month or press 'n' to skip: ");
             String month = in.nextLine();
 
-            c.editAppointment(option, time, day, month);
+            // getting the Appointment ID and the Appointment type
+            ArrayList<Appointment> app = c.getAppointments();
+            Appointment a = app.get(appointmentID);
+            String typeApp = app.get(appointmentID).showAppointment().substring(0, 3);
+            Appointment aux = app.get(appointmentID);
+
+            c.editAppointment(appointmentID, time, day, month);
+
+            // obtaining time, day and month changes
+            time = a.getTime();
+            day = a.getDay();
+            month = a.getMonth();
+
+            // edit Analyses
+            if(typeApp.equals("ana")){
+
+                // casting the Appointment into Analyses to obtain the Analyses ID
+                Analyses auxx = (Analyses) aux;
+                Integer typeAppID = auxx.getAnalysesID();
+
+                // update Analyses into JDBC
+                try {
+                    String query = "update analyses set time = '"+time+"', day = '"+day+"', month = '"+month+"' where id_analyses = '"+ typeAppID + "';";
+                    PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // edit Gynecology
+            else if(typeApp.equals("gyn")){
+
+                // casting the Appointment into Gynecology to obtain the Gynecology ID
+                Gynecology auxx = (Gynecology) aux;
+                Integer typeAppID = auxx.getGynecologyID();
+
+                // update Gynecology into JDBC
+                try {
+                    String query = "update gynecology set time = '"+time+"', day = '"+day+"', month = '"+month+"' where id_gynecology = '"+ typeAppID + "';";
+                    PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // edit Obstetrics
+            else if(typeApp.equals("obs")){
+
+                // casting the Appointment into Obstetrics to obtain the Obstetrics ID
+                Obstetrics auxx = (Obstetrics) aux;
+                Integer typeAppID = auxx.getObstetricsID();
+
+                // update Obstetrics into JDBC
+                try {
+                    String query = "update obstetrics set time = '"+time+"', day = '"+day+"', month = '"+month+"' where id_obstetrics = '"+ typeAppID + "';";
+                    PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // edit Pediatrics
+            else if(typeApp.equals("ped")){
+
+                // casting the Appointment into Pediatrics to obtain the Pediatrics ID
+                Pediatrics auxx = (Pediatrics) aux;
+                Integer typeAppID = auxx.getPediatricsID();
+
+                // update Pediatrics into JDBC
+                try {
+                    String query = "update pediatrics set time = '"+time+"', day = '"+day+"', month = '"+month+"' where id_pediatrics = '"+ typeAppID + "';";
+                    PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            else{
+                System.out.println("Error...");
+            }
         }
         else{
             System.out.println("!This client has no appointments!");
         }
-        audit.csvWriter("editAppointment");
+
+        writing.csvWriter("editAppointment");
     }
 
+    // delete a given Client
     public void removeClient(){
         Scanner in = new Scanner(System.in);
 
@@ -406,9 +787,20 @@ public class Service {
 
         clients.remove(cID);
 
-        audit.csvWriter("removeClient");
+        // deleting Client from JDBC
+        try {
+            String query = "delete from clients where id_client = " + cID + ";";
+            PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        writing.csvWriter("removeClient");
     }
 
+    // delete a given Doctor
     public void removeDoctor(){
         Scanner in = new Scanner(System.in);
 
@@ -416,12 +808,19 @@ public class Service {
         System.out.print("-> The ID of the Doctor: ");
         int dID = in.nextInt();
 
-        for(int i = 0; i<doctors.size(); i++){
-            if(dID == doctors.get(i).getDoctorID()){
-                doctors.remove(i);
-            }
+        doctors.remove(dID-1);
+
+        // deleting Doctor from JDBC
+        try {
+            String query = "delete from doctors where id_doctor = " + dID + ";";
+            PreparedStatement preparedStatement = dataBase.getConnection().prepareStatement(query);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        audit.csvWriter("removeDoctor");
+
+        writing.csvWriter("removeDoctor");
     }
 
 
@@ -440,5 +839,4 @@ public class Service {
     public void setDoctors (ArrayList < Doctor > doctors) {
         this.doctors = doctors;
     }
-
 }

@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.sql.Timestamp;
 
 public class Write {
-    private Write(){}
     private static Write single_instance = null;
+    private Write(){}
 
     public static Write getInstance(){
         if(single_instance == null){
@@ -20,7 +20,7 @@ public class Write {
 
         try {
             FileWriter myWriter = new FileWriter("audit.csv", true);
-            myWriter.write(message + "," + time.toString() + "\n");
+            myWriter.write(message + "," + time + "\n");
             myWriter.close();
         } catch (IOException e) {
             System.out.println("An error occurred while writing in audit.csv");

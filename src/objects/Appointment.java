@@ -21,6 +21,22 @@ public class Appointment {
         return "Time: "+this.time+"; Date (dd/mm): "+this.day+"/"+this.month;
     }
 
+    public int getAppointmentID() {
+        return appointmentID;
+    }
+
+    public void setAppointmentID(int appointmentID) {
+        this.appointmentID = appointmentID;
+    }
+
+    public static int getNoOfAppointment() {
+        return noOfAppointment;
+    }
+
+    public static void setNoOfAppointment(int noOfAppointment) {
+        Appointment.noOfAppointment = noOfAppointment;
+    }
+
     public String getTime() {
         return time;
     }
@@ -43,21 +59,5 @@ public class Appointment {
 
     public void setMonth(String month) {
         this.month = month;
-    }
-
-    public int getAppointmentID() {
-        return appointmentID;
-    }
-
-    public void setAppointmentID(int appointmentID) {
-        this.appointmentID = appointmentID;
-    }
-
-    public static int getNoOfAppointment() {
-        return noOfAppointment;
-    }
-
-    public static void setNoOfAppointment(int noOfAppointment) {
-        Appointment.noOfAppointment = noOfAppointment;
     }
 }

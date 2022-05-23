@@ -1,7 +1,7 @@
 > # Clase
 
  | No.  | Clasa       | 
- |:-----|     ----    | 
+ |:- -----------|     ----    | 
  | 1    | Analyses    |
  | 2    | Appointment |
  | 3    | Client      |
